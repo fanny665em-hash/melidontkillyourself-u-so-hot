@@ -14,7 +14,6 @@
             --kawaii-yellow: #fdfdcb;
             --text-main: #6b5b95;
             --kawaii-green: #b8e0d2;
-            --kawaii-orange: #ffe5d9;
         }
 
         body {
@@ -49,18 +48,23 @@
             filter: drop-shadow(0 5px 15px rgba(255, 142, 158, 0.4));
         }
 
-        /* Confetti */
-        .confetti {
-            position: absolute; width: 10px; height: 10px; 
-            border-radius: 50%; opacity: 0; pointer-events: none;
-        }
-
+        /* Planta y Burbuja */
         #plant-container {
             height: 160px; display: flex; align-items: flex-end; justify-content: center; margin-bottom: 15px;
         }
-
         .plant-svg { transition: all 1s ease-in-out; }
 
+        .breath-orb {
+            width: 180px; height: 180px; border-radius: 50%;
+            background: radial-gradient(circle, #fff 0%, #ffdeeb 100%);
+            border: 8px solid white; box-shadow: 0 0 40px rgba(255, 175, 189, 0.4);
+            display: flex; align-items: center; justify-content: center;
+            transition: transform 4s ease-in-out;
+        }
+        .inhale { transform: scale(1.4); }
+        .exhale { transform: scale(1); }
+
+        /* Controles personalizados */
         .checkbox-cute {
             appearance: none; width: 26px; height: 26px; border: 2px solid var(--kawaii-pink);
             border-radius: 10px; cursor: pointer; position: relative; background: white; flex-shrink: 0;
@@ -69,47 +73,75 @@
         .checkbox-cute:checked::after {
             content: '✨'; position: absolute; top: -2px; left: 2px; font-size: 16px;
         }
+        .strike-text:checked + span { text-decoration: line-through; color: #ff8e9e; opacity: 0.7; }
 
+        /* Jardín y Progreso */
         .garden-btn { width: 100%; cursor: pointer; outline: none; transition: transform 0.2s; }
-        .garden-btn:active { transform: scale(0.9); }
-
+        .garden-btn:active { transform: scale(0.95); }
         .garden-unlocked {
             opacity: 1 !important; filter: grayscale(0) !important;
             background: white !important; border-color: #ffdeeb !important;
-            box-shadow: 0 0 20px rgba(255, 175, 189, 0.4);
-            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(255, 175, 189, 0.4); transform: scale(1.05);
         }
-
         .progress-fill {
             height: 100%; background: linear-gradient(90deg, #b8e0d2, #ff8e9e);
             width: 0%; transition: width 0.8s ease;
         }
 
-        .strike-text:checked + span { text-decoration: line-through; color: #ff8e9e; opacity: 0.7; }
+        /* Efectos extra */
+        .kawaii-particle {
+            position: absolute;
+            pointer-events: none;
+            z-index: 1000;
+            font-size: 1.8rem;
+            animation: floatUp 1.8s ease-out forwards;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
         
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(0.5) rotate(0deg); opacity: 1; }
+            50% { transform: translateY(-60px) scale(1.2) rotate(15deg); opacity: 1; }
+            100% { transform: translateY(-120px) scale(1) rotate(-15deg); opacity: 0; }
+        }
+
         .night-glow { background: linear-gradient(135deg, #2d3436 0%, #000000 100%); color: #dfe6e9; }
-        
         input, textarea { outline: none; border-radius: 1rem; border: 2px solid transparent; transition: 0.3s; }
         input:focus, textarea:focus { border-color: var(--kawaii-pink); }
+        .touch-none { touch-action: none; }
     </style>
 </head>
 <body class="min-h-screen pb-32">
+
+    <!-- PANTALLA DE CARGA PARA FIREBASE -->
+    <div id="loading-screen" class="fixed inset-0 bg-white/95 backdrop-blur-md z-[9999] flex flex-col items-center justify-center transition-opacity duration-500">
+        <div class="text-7xl mb-6 animate-bounce">🐰</div>
+        <h2 class="text-2xl font-bold text-pink-500 mb-2">Universo de Calma</h2>
+        <p class="text-sm font-bold text-gray-400 animate-pulse uppercase tracking-widest">Preparando tu refugio...</p>
+    </div>
 
     <div id="confetti-container" class="fixed inset-0 pointer-events-none z-[999]"></div>
 
     <header class="pt-8 pb-2 text-center">
         <div id="avatar" class="text-6xl mb-2 animate-bounce cursor-pointer" onclick="wink()">🐰</div>
         <h1 class="text-2xl font-bold tracking-tight text-pink-500">¡Hola, Melisa! ✨</h1>
+        <p class="text-[10px] text-gray-400 italic">Eres más valiente de lo que crees.</p>
     </header>
 
     <main class="max-w-md mx-auto px-6">
         
-        <!-- INICIO: PLANTA + VICTORIAS -->
+        <!-- PESTAÑA 1: INICIO -->
         <section id="tab-home" class="tab-content active">
             <div class="kawaii-card p-6 mb-6 text-center">
                 <div id="plant-container">
                     <svg id="main-plant" class="plant-svg" width="100" height="130" viewBox="0 0 100 120">
                         <path id="pot" d="M35 100 L65 100 L70 120 L30 120 Z" fill="#d4a373" />
+                        <circle cx="45" cy="108" r="1.5" fill="#6b5b95" />
+                        <circle cx="55" cy="108" r="1.5" fill="#6b5b95" />
+                        <path d="M48 111 Q50 113 52 111" stroke="#6b5b95" stroke-width="1.5" fill="none" stroke-linecap="round" />
+                        <ellipse cx="40" cy="110" rx="2.5" ry="1.5" fill="#ff9a9e" opacity="0.6"/>
+                        <ellipse cx="60" cy="110" rx="2.5" ry="1.5" fill="#ff9a9e" opacity="0.6"/>
                         <g id="plant-growth"></g>
                     </svg>
                 </div>
@@ -120,36 +152,68 @@
                 <p id="experience-txt" class="text-[9px] text-gray-400 mt-2 italic">0/100 para florecer</p>
             </div>
 
+            <!-- Rastreador de Ánimo -->
+            <div class="kawaii-card p-5 mb-6 text-center shadow-sm border-2 border-purple-50">
+                <h3 class="font-bold text-sm mb-3 text-purple-500">¿Cómo está tu clima interior hoy? 🌤️</h3>
+                <div class="flex justify-center gap-4">
+                    <button onclick="setMood('awful')" id="mood-awful" class="text-3xl grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition transform hover:scale-110">🌧️</button>
+                    <button onclick="setMood('sad')" id="mood-sad" class="text-3xl grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition transform hover:scale-110">☁️</button>
+                    <button onclick="setMood('neutral')" id="mood-neutral" class="text-3xl grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition transform hover:scale-110">⛅</button>
+                    <button onclick="setMood('good')" id="mood-good" class="text-3xl grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition transform hover:scale-110">☀️</button>
+                    <button onclick="setMood('great')" id="mood-great" class="text-3xl grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition transform hover:scale-110">🌈</button>
+                </div>
+                
+                <div class="mt-4 pt-4 border-t border-purple-50/50">
+                    <p class="text-[10px] text-purple-400 mb-2 italic">Si necesitas expresarlo, escríbelo aquí abajo...</p>
+                    <textarea id="quick-diary-text" placeholder="Hoy me siento así porque..." class="w-full p-3 bg-purple-50/50 rounded-2xl border-none text-xs h-16 shadow-inner outline-none resize-none focus:bg-white transition"></textarea>
+                    <button onclick="saveQuickDiary()" class="mt-2 w-full bg-purple-300 text-white py-2 rounded-2xl font-bold text-xs shadow-sm hover:bg-purple-400 transition">Guardar en mi Diario 📖</button>
+                    <p id="quick-diary-feedback" class="text-[10px] text-purple-500 font-bold mt-2 h-3"></p>
+                </div>
+            </div>
+
+            <!-- Espejo -->
+            <div class="kawaii-card p-6 mb-6 text-center shadow-sm bg-gradient-to-b from-white to-pink-50 border-2 border-pink-100">
+                <div class="text-4xl mb-2">✨💖✨</div>
+                <h2 class="text-lg font-bold text-pink-500 mb-2 flex items-center justify-center">
+                    <span class="mr-2">🌸</span> Espejo de Melisa
+                </h2>
+                <div class="min-h-[70px] flex items-center justify-center p-4 bg-white/70 rounded-3xl border border-pink-50 mb-4 shadow-inner">
+                    <p id="affirmation-text" class="text-sm font-semibold text-pink-600 leading-relaxed italic"></p>
+                </div>
+                <button onclick="triggerAffirmation()" class="w-full bg-pink-400 text-white py-3 rounded-3xl font-bold shadow-lg hover:bg-pink-500 transition text-sm">
+                    ✨ Leer otra verdad
+                </button>
+            </div>
+
+            <!-- Victorias -->
             <div class="kawaii-card p-6 mb-6">
-                <h2 class="text-lg font-bold mb-4 flex items-center text-pink-500">
+                <h2 class="text-lg font-bold mb-4 flex items-center text-pink-500 justify-center">
                     <span class="mr-2">🌈</span> Mis Victorias de Hoy
                 </h2>
-                <div class="space-y-3">
-                    <label class="flex items-center p-2 bg-pink-50 rounded-2xl cursor-pointer hover:bg-pink-100 transition">
-                        <input type="checkbox" id="check-water" onchange="syncFromHome('water', this.checked)" class="checkbox-cute strike-text mr-4">
-                        <span class="text-sm font-medium">Hoy tomé agua... 🌸</span>
-                    </label>
-                    <label class="flex items-center p-2 bg-purple-50 rounded-2xl cursor-pointer hover:bg-purple-100 transition">
-                        <input type="checkbox" id="check-sleep" onchange="syncFromHome('sleep', this.checked)" class="checkbox-cute strike-text mr-4">
-                        <span class="text-sm font-medium">Hoy descansé... 🌙</span>
-                    </label>
-                    <label class="flex items-center p-2 bg-blue-50 rounded-2xl cursor-pointer hover:bg-blue-100 transition">
-                        <input type="checkbox" id="check-move" onchange="syncFromHome('move', this.checked)" class="checkbox-cute strike-text mr-4">
-                        <span class="text-sm font-medium">Hoy me moví... 👟</span>
-                    </label>
-                    <label class="flex items-center p-2 bg-yellow-50 rounded-2xl cursor-pointer hover:bg-yellow-100 transition">
-                        <input type="checkbox" id="check-affirm" onchange="syncFromHome('affirm', this.checked)" class="checkbox-cute strike-text mr-4">
-                        <span class="text-sm font-medium">Hoy me valoré... 💎</span>
-                    </label>
-                    <label class="flex items-center p-2 bg-green-50 rounded-2xl cursor-pointer hover:bg-green-100 transition">
-                        <input type="checkbox" id="check-food" onchange="syncFromHome('food', this.checked)" class="checkbox-cute strike-text mr-4">
-                        <span class="text-sm font-medium">Hoy comí algo... 🍱</span>
-                    </label>
-                    <label class="flex items-center p-2 bg-orange-50 rounded-2xl cursor-pointer hover:bg-orange-100 transition">
-                        <input type="checkbox" id="check-self" onchange="syncFromHome('self', this.checked)" class="checkbox-cute strike-text mr-4">
-                        <span class="text-sm font-medium">Hoy hice algo para mí... 🎨</span>
-                    </label>
+                
+                <div class="grid grid-cols-2 gap-3 mb-4">
+                    <button onclick="toggleVictory('water')" id="btn-vic-water" class="garden-btn kawaii-card p-4 text-center opacity-40 grayscale border-2 border-transparent">
+                        <div class="text-3xl mb-1">🌸</div><p class="text-[10px] font-bold text-pink-400 uppercase">Agua</p>
+                    </button>
+                    <button onclick="toggleVictory('sleep')" id="btn-vic-sleep" class="garden-btn kawaii-card p-4 text-center opacity-40 grayscale border-2 border-transparent">
+                        <div class="text-3xl mb-1">🌙</div><p class="text-[10px] font-bold text-purple-400 uppercase">Descanso</p>
+                    </button>
+                    <button onclick="toggleVictory('move')" id="btn-vic-move" class="garden-btn kawaii-card p-4 text-center opacity-40 grayscale border-2 border-transparent">
+                        <div class="text-3xl mb-1">👟</div><p class="text-[10px] font-bold text-blue-400 uppercase">Moverse</p>
+                    </button>
+                    <button onclick="toggleVictory('affirm')" id="btn-vic-affirm" class="garden-btn kawaii-card p-4 text-center opacity-40 grayscale border-2 border-transparent">
+                        <div class="text-3xl mb-1">💎</div><p class="text-[10px] font-bold text-yellow-500 uppercase">Valor</p>
+                    </button>
+                    <button onclick="toggleVictory('food')" id="btn-vic-food" class="garden-btn kawaii-card p-4 text-center opacity-40 grayscale border-2 border-transparent">
+                        <div class="text-3xl mb-1">🍱</div><p class="text-[10px] font-bold text-green-500 uppercase">Comida</p>
+                    </button>
+                    <button onclick="toggleVictory('self')" id="btn-vic-self" class="garden-btn kawaii-card p-4 text-center opacity-40 grayscale border-2 border-transparent">
+                        <div class="text-3xl mb-1">🎨</div><p class="text-[10px] font-bold text-orange-400 uppercase">Para mí</p>
+                    </button>
                 </div>
+                
+                <div id="victory-feedback" class="text-center text-sm font-bold text-green-500 h-5 mb-2"></div>
+                <p class="text-[10px] text-gray-400 text-center uppercase tracking-widest italic">Cada flor es un momento en que te elegiste a ti misma</p>
             </div>
 
             <button onclick="showNightMessage()" class="w-full kawaii-card p-5 border-dashed border-4 border-indigo-200 flex items-center justify-center gap-3 hover:bg-indigo-50 transition">
@@ -158,253 +222,689 @@
             </button>
         </section>
 
-        <!-- CAZADOR DE PENSAMIENTOS (CBT + AMIGA) -->
+        <!-- PESTAÑA 2: CBT -->
         <section id="tab-cbt" class="tab-content">
             <div class="kawaii-card p-8 mb-6 bg-gradient-to-b from-white to-purple-50">
                 <div class="text-5xl text-center mb-4">🔍</div>
                 <h2 class="text-xl font-bold text-purple-600 mb-2 text-center">Cazador de Nubes</h2>
                 <p class="text-xs text-gray-400 mb-6 text-center italic">Cuestionamos la ansiedad con amor, Melisa.</p>
                 <div class="space-y-4">
-                    <textarea id="cbt-thought" placeholder="¿Qué pensamiento negativo apareció?" class="w-full bg-white border-2 border-pink-100 p-4 text-sm h-20 shadow-sm"></textarea>
+                    <textarea id="cbt-thought" placeholder="¿Qué pensamiento negativo apareció?" class="w-full bg-white border-2 border-pink-100 p-4 text-sm h-20 shadow-sm outline-none"></textarea>
+                    
                     <div class="bg-white/50 p-4 rounded-3xl border-2 border-purple-100">
                         <p class="text-[10px] font-bold uppercase text-purple-600 mb-1 ml-1">Lente de la Amistad 💖</p>
-                        <p class="text-[9px] text-gray-400 italic mb-2 ml-1">¿Serías así de dura con una amiga? ¿Qué le dirías?</p>
-                        <textarea id="cbt-friend" placeholder="Escribe un consejo amable para Melisa..." class="w-full bg-white p-3 text-sm h-20 border-none"></textarea>
+                        <p class="text-[9px] text-gray-400 italic mb-2 ml-1">¿Qué le dirías a Melisa si fuera tu mejor amiga?</p>
+                        <textarea id="cbt-friend" placeholder="Escribe un consejo amable para ti misma..." class="w-full bg-white p-3 text-sm h-20 border-none shadow-inner outline-none"></textarea>
                     </div>
-                    <button onclick="addThoughtChallenge()" class="w-full bg-purple-400 text-white py-4 rounded-3xl font-bold shadow-lg">Disipar Nube ✨</button>
+                    
+                    <button onclick="addThoughtChallenge()" class="w-full bg-purple-400 text-white py-4 rounded-3xl font-bold shadow-lg hover:bg-purple-500 transition">Disipar Nube ✨</button>
                 </div>
                 <div id="cbt-history" class="mt-8 space-y-3"></div>
             </div>
         </section>
 
-        <!-- GROUNDING: CAZA DE COLORES + GRATITUD -->
+        <!-- PESTAÑA 3: LAMA RINCHEN -->
+        <section id="tab-lama" class="tab-content">
+            <div class="kawaii-card p-8 mb-6 text-center bg-gradient-to-b from-white to-orange-50">
+                <div class="text-4xl mb-4">✨📖✨</div>
+                <h2 class="text-xl font-bold text-orange-500 mb-2">Lama Rinchen</h2>
+                <p class="text-xs text-gray-400 mb-6 italic">Sabiduría y calma para tu mente, Melisa.</p>
+                
+                <div class="bg-white/60 p-5 rounded-3xl border-2 border-orange-100 shadow-sm mb-8">
+                    <h3 class="font-bold text-sm mb-3 text-orange-500 flex items-center justify-center">
+                        <span class="mr-2">💎</span> Perlas de Sabiduría
+                    </h3>
+                    <div class="min-h-[100px] flex items-center justify-center p-4 bg-white/90 rounded-2xl shadow-inner mb-4">
+                        <p id="lama-quote-text" class="text-sm text-gray-700 italic leading-relaxed"></p>
+                    </div>
+                    <button onclick="triggerLamaQuote()" class="w-full bg-orange-400 text-white py-3 rounded-3xl font-bold shadow-lg hover:bg-orange-500 transition text-sm">
+                        ✨ Leer otra enseñanza
+                    </button>
+                </div>
+
+                <h3 class="font-bold text-sm mb-4 text-orange-500">Meditaciones Guiadas 🧘‍♀️</h3>
+                <div class="space-y-5 mb-8">
+                    <div class="rounded-2xl overflow-hidden shadow-md border-4 border-white bg-white">
+                        <p class="text-xs font-bold text-gray-600 my-2">Soltar el Estrés y la Ansiedad</p>
+                        <iframe width="100%" height="200" src="https://www.youtube.com/embed/u7Gzf_q0sjs" title="Meditación Ansiedad" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                    <div class="rounded-2xl overflow-hidden shadow-md border-4 border-white bg-white">
+                        <p class="text-xs font-bold text-gray-600 my-2">Relajación en el cuerpo</p>
+                        <iframe width="100%" height="200" src="https://www.youtube.com/embed/MOzWnce6Tlw" title="Iniciación a la Meditación" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                </div>
+                <a href="https://lamarinchen.org/" target="_blank" class="block w-full bg-orange-400 text-white py-4 rounded-3xl font-bold shadow-lg hover:bg-orange-500 transition">
+                    Visitar lamarinchen.org ✨
+                </a>
+            </div>
+        </section>
+
+        <!-- PESTAÑA 4: GROUNDING -->
         <section id="tab-grounding" class="tab-content">
             <div class="kawaii-card p-8 mb-6 text-center bg-gradient-to-b from-white to-blue-50">
-                <div class="text-5xl mb-4">🌈</div>
-                <h2 class="text-xl font-bold text-blue-500 mb-2">Caza de Colores</h2>
-                <p class="text-xs text-gray-400 mb-6 italic">Ancla tu mente al presente, Melisa.</p>
-                <div id="grounding-game" class="bg-white/80 p-6 rounded-3xl border-2 border-blue-100 mb-6">
-                    <p id="grounding-instruction" class="text-lg font-bold text-blue-600">Busca 5 cosas de color <span id="target-color" class="underline">Rojo</span>.</p>
+                <div id="grounding-icon" class="text-5xl mb-4 transition-all transform hover:scale-110">👁️</div>
+                <h2 class="text-xl font-bold text-blue-500 mb-2">Técnica de Anclaje</h2>
+                <p class="text-xs text-gray-400 mb-6 italic">Usa tus sentidos para volver al presente, Melisa.</p>
+                <div class="bg-white/80 p-6 rounded-3xl border-2 border-blue-100 mb-6 shadow-inner">
+                    <p id="grounding-text" class="text-lg font-bold text-blue-600">Busca 5 cosas que puedas VER</p>
                 </div>
-                <button onclick="nextGroundingColor()" class="w-full bg-blue-400 text-white py-4 rounded-3xl font-bold shadow-lg">¡Lo encontré! ✨</button>
+                <button id="grounding-btn" onclick="next54321Step()" class="w-full bg-blue-400 text-white py-4 rounded-3xl font-bold shadow-lg hover:bg-blue-500 transition">Las veo 👀</button>
             </div>
-            <div class="kawaii-card p-6">
-                <h3 class="font-bold text-sm mb-2 text-green-600">Refugio de Gratitud 🌿</h3>
-                <textarea id="gratitude-input" placeholder="Algo pequeñito que agradezcas hoy..." class="w-full p-4 bg-green-50/30 rounded-2xl border-none text-sm h-24 mb-4"></textarea>
-                <button onclick="saveGratitude()" class="w-full bg-green-400 text-white py-2 rounded-2xl font-bold text-sm">Guardar ✨</button>
+
+            <div class="kawaii-card p-6 mb-6">
+                <h3 class="font-bold text-sm mb-2 text-green-600 italic">Refugio de Gratitud 🌿</h3>
+                <textarea id="gratitude-input" placeholder="Algo pequeñito que agradezcas hoy..." class="w-full p-4 bg-green-50/30 rounded-2xl border-none text-sm h-24 mb-4 shadow-inner outline-none"></textarea>
+                <button onclick="saveGratitude()" class="w-full bg-green-400 text-white py-2 rounded-2xl font-bold text-sm hover:bg-green-500">Guardar ✨</button>
                 <div id="gratitude-list" class="mt-4 space-y-2"></div>
             </div>
-        </section>
 
-        <!-- JARDÍN INTERACTIVO -->
-        <section id="tab-garden" class="tab-content py-4">
-            <h2 class="text-2xl font-bold text-center mb-2 text-green-600">Tu Jardín Melisa 🏆</h2>
-            <p class="text-[10px] text-gray-400 text-center mb-8 uppercase tracking-widest italic">Toca una flor para regar tu victoria</p>
-            <div class="grid grid-cols-2 gap-3">
-                <button onclick="toggleGardenVictory('water')" id="garden-water" class="garden-btn kawaii-card p-4 text-center opacity-30 grayscale border-2 border-transparent">
-                    <div class="text-3xl mb-1">🌸</div><p class="text-[10px] font-bold text-pink-400 uppercase">Agua</p>
-                </button>
-                <button onclick="toggleGardenVictory('sleep')" id="garden-sleep" class="garden-btn kawaii-card p-4 text-center opacity-30 grayscale border-2 border-transparent">
-                    <div class="text-3xl mb-1">🌙</div><p class="text-[10px] font-bold text-purple-400 uppercase">Descanso</p>
-                </button>
-                <button onclick="toggleGardenVictory('move')" id="garden-move" class="garden-btn kawaii-card p-4 text-center opacity-30 grayscale border-2 border-transparent">
-                    <div class="text-3xl mb-1">👟</div><p class="text-[10px] font-bold text-blue-400 uppercase">Moverse</p>
-                </button>
-                <button onclick="toggleGardenVictory('affirm')" id="garden-affirm" class="garden-btn kawaii-card p-4 text-center opacity-30 grayscale border-2 border-transparent">
-                    <div class="text-3xl mb-1">💎</div><p class="text-[10px] font-bold text-yellow-500 uppercase">Valor</p>
-                </button>
-                <button onclick="toggleGardenVictory('food')" id="garden-food" class="garden-btn kawaii-card p-4 text-center opacity-30 grayscale border-2 border-transparent">
-                    <div class="text-3xl mb-1">🍱</div><p class="text-[10px] font-bold text-green-500 uppercase">Comida</p>
-                </button>
-                <button onclick="toggleGardenVictory('self')" id="garden-self" class="garden-btn kawaii-card p-4 text-center opacity-30 grayscale border-2 border-transparent">
-                    <div class="text-3xl mb-1">🎨</div><p class="text-[10px] font-bold text-orange-400 uppercase">Para mí</p>
-                </button>
+            <div class="kawaii-card p-6">
+                <h3 class="font-bold text-sm mb-2 text-yellow-500 italic">Cajita de Sonrisas 🎁</h3>
+                <p class="text-[10px] text-gray-400 mb-4">Tu kit de emergencia: guarda aquí recuerdos felices o letras de canciones.</p>
+                <textarea id="smile-input" placeholder="Ej: La vez que nos reímos tanto que lloramos..." class="w-full p-4 bg-yellow-50/30 rounded-2xl border-none text-sm h-20 mb-4 shadow-inner outline-none"></textarea>
+                <button onclick="saveSmile()" class="w-full bg-yellow-400 text-white py-2 rounded-2xl font-bold text-sm hover:bg-yellow-500 transition">Guardar Recuerdo ✨</button>
+                <div id="smile-list" class="mt-4 space-y-2"></div>
             </div>
-            <div id="garden-feedback" class="mt-6 text-center text-sm font-bold text-green-500 h-6"></div>
         </section>
 
-        <!-- AFIRMACIONES -->
-        <section id="tab-affirmations" class="tab-content">
-            <div class="kawaii-card p-8 mb-6 text-center shadow-lg bg-gradient-to-b from-white to-pink-50">
-                <div class="text-5xl mb-4">🪞</div>
-                <h2 class="text-xl font-bold text-pink-500 mb-2">Espejo de Melisa</h2>
-                <div class="min-h-[120px] flex items-center justify-center p-4 bg-white/60 rounded-3xl border-2 border-pink-100 mb-6">
-                    <p id="affirmation-text" class="text-md font-semibold text-pink-600 leading-relaxed italic">
-                        "Melisa, hoy elijo ser mi mejor aliada."
-                    </p>
+        <!-- PESTAÑA 5: DIARIO -->
+        <section id="tab-diary" class="tab-content">
+            <div class="kawaii-card p-8 mb-6 text-center bg-gradient-to-b from-white to-yellow-50">
+                <div class="text-5xl mb-4">🎨</div>
+                <h2 class="text-xl font-bold text-yellow-500 mb-2">Mi Diario Creativo</h2>
+                <p class="text-xs text-gray-400 mb-6 italic">Escribe o dibuja cómo te sientes hoy, Melisa.</p>
+                
+                <textarea id="diary-text" placeholder="Hoy me siento..." class="w-full p-4 bg-white/80 rounded-2xl border-2 border-yellow-100 text-sm h-20 mb-4 shadow-inner outline-none"></textarea>
+                
+                <div class="bg-white/80 p-4 rounded-3xl border-2 border-yellow-100 mb-4 shadow-inner">
+                    <div class="flex justify-center gap-3 mb-3">
+                        <button onclick="setBrushColor('#6b5b95')" class="w-6 h-6 rounded-full bg-[#6b5b95] border-2 border-white shadow-sm"></button>
+                        <button onclick="setBrushColor('#ff8e9e')" class="w-6 h-6 rounded-full bg-[#ff8e9e] border-2 border-white shadow-sm"></button>
+                        <button onclick="setBrushColor('#7ebc89')" class="w-6 h-6 rounded-full bg-[#7ebc89] border-2 border-white shadow-sm"></button>
+                        <button onclick="setBrushColor('#ffd166')" class="w-6 h-6 rounded-full bg-[#ffd166] border-2 border-white shadow-sm"></button>
+                        <button onclick="clearCanvas()" class="text-[10px] text-gray-500 underline ml-2 flex items-center">Borrar</button>
+                    </div>
+                    <canvas id="diary-canvas" width="260" height="200" class="bg-white rounded-xl border border-gray-100 mx-auto touch-none shadow-sm w-full" style="max-width: 100%;"></canvas>
                 </div>
-                <button onclick="triggerAffirmation()" class="w-full bg-pink-400 text-white py-4 rounded-3xl font-bold shadow-lg hover:scale-105 transition">
-                    ✨ Siguiente Verdad
-                </button>
+                <button onclick="saveDiaryEntry()" class="w-full bg-yellow-400 text-white py-4 rounded-3xl font-bold shadow-lg hover:bg-yellow-500 transition">Guardar Recuerdo ✨</button>
             </div>
+            <div id="diary-history" class="columns-2 gap-3 mt-6"></div>
         </section>
 
-        <!-- SOS -->
+        <!-- PESTAÑA 6: CALMA Y SOS -->
         <section id="tab-calm" class="tab-content text-center py-4">
             <div class="kawaii-card p-8 mb-6">
                 <h2 class="text-xl font-bold mb-6 text-cyan-600">Burbuja de Calma 🌬️</h2>
-                <div class="flex justify-center mb-8"><div id="orb" class="breath-orb"><span id="breath-status" class="text-pink-400 font-bold text-xl uppercase">Listo</span></div></div>
-                <button onclick="startBreathing()" id="btn-breathe" class="bg-pink-400 text-white px-10 py-3 rounded-full font-bold shadow-lg">Comenzar</button>
+                <div class="flex justify-center mb-8">
+                    <div id="orb" class="breath-orb">
+                        <span id="breath-status" class="text-pink-400 font-bold text-xl uppercase">Listo</span>
+                    </div>
+                </div>
+                <button onclick="startBreathing()" id="btn-breathe" class="bg-pink-400 text-white px-10 py-3 rounded-full font-bold shadow-lg hover:bg-pink-500 transition">Comenzar</button>
             </div>
-            <button onclick="showPanicDialog()" class="w-full bg-red-400 text-white py-6 rounded-[2.5rem] font-bold shadow-xl text-lg mb-8">🚨 Ayuda en Crisis</button>
-            <div class="kawaii-card p-8 bg-white border-2 border-red-100 flex items-center justify-between text-xs">
-                <span class="font-bold text-red-500">Asistencia al Suicida</span>
-                <a href="tel:08009991791" class="bg-red-500 text-white p-3 rounded-full shadow-lg">📞</a>
+            
+            <h3 class="text-lg font-bold text-pink-500 mb-3">Personas que me quieren mucho 🥰</h3>
+            <div class="grid grid-cols-1 gap-4 mb-6">
+                <div class="kawaii-card p-4 flex flex-col items-center justify-center hover:scale-105 transition-transform border-2 border-pink-100 bg-white/80">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="text-3xl">🌹</span>
+                        <span class="text-sm font-bold text-pink-600">Meli</span>
+                    </div>
+                    <div class="flex gap-2 w-full">
+                        <a href="tel:2255224504" class="flex-1 text-center text-[10px] text-pink-500 bg-pink-50 px-2 py-2 rounded-xl shadow-sm hover:bg-pink-100 font-bold transition">Llamar 📞</a>
+                        <a href="https://wa.me/5492255224504?text=Hola%20Meli.%20No%20estoy%20bien%20y%20me%20cuesta%20hablar.%20Solo%20necesito%20saber%20que%20est%C3%A1s%20ah%C3%AD.%20Te%20quiero.%20%F0%9F%92%96" target="_blank" class="flex-1 text-center text-[10px] text-pink-500 bg-pink-50 px-2 py-2 rounded-xl shadow-sm hover:bg-pink-100 font-bold transition">Abrazo Silencioso 💬</a>
+                    </div>
+                </div>
+                <div class="kawaii-card p-4 flex flex-col items-center justify-center hover:scale-105 transition-transform border-2 border-purple-100 bg-white/80">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="text-3xl">🐱</span>
+                        <span class="text-sm font-bold text-purple-600">Fanny</span>
+                    </div>
+                    <div class="flex gap-2 w-full">
+                        <a href="tel:2236666732" class="flex-1 text-center text-[10px] text-purple-500 bg-purple-50 px-2 py-2 rounded-xl shadow-sm hover:bg-purple-100 font-bold transition">Llamar 📞</a>
+                        <a href="https://wa.me/5492236666732?text=Hola%20Fanny.%20No%20estoy%20bien%20y%20me%20cuesta%20hablar.%20Solo%20necesito%20saber%20que%20est%C3%A1s%20ah%C3%AD.%20Te%20quiero.%20%F0%9F%92%96" target="_blank" class="flex-1 text-center text-[10px] text-purple-500 bg-purple-50 px-2 py-2 rounded-xl shadow-sm hover:bg-purple-100 font-bold transition">Abrazo Silencioso 💬</a>
+                    </div>
+                </div>
+            </div>
+            
+            <button onclick="showPanicDialog()" class="w-full bg-red-400 text-white py-5 rounded-3xl font-bold shadow-lg mb-6">🚨 Ayuda en Crisis</button>
+            <div class="kawaii-card p-6 flex items-center justify-between text-xs font-bold text-red-500">
+                <span>Asistencia al Suicida</span>
+                <a href="tel:08009991791" class="bg-red-500 text-white p-3 rounded-full shadow-lg text-xs">📞</a>
             </div>
         </section>
-
     </main>
 
-    <!-- Barra de Navegación -->
+    <!-- NAV -->
     <nav class="fixed bottom-6 left-4 right-4 bg-white/90 backdrop-blur-md rounded-full px-4 py-3 flex justify-between items-center shadow-2xl border-2 border-pink-50 z-50">
-        <button onclick="nav('home')" id="btn-home" class="nav-btn active text-gray-400 p-2"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg></button>
-        <button onclick="nav('cbt')" id="btn-cbt" class="nav-btn text-gray-400 p-2"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg></button>
-        <button onclick="nav('grounding')" id="btn-grounding" class="nav-btn text-gray-400 p-2"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg></button>
-        <button onclick="nav('garden')" id="btn-garden" class="nav-btn text-gray-400 p-2"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h14a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg></button>
-        <button onclick="nav('calm')" id="btn-calm" class="nav-btn text-gray-400 p-2"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></button>
+        <button onclick="nav('home')" id="btn-home" class="nav-btn active text-gray-400 p-2">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+        </button>
+        <button onclick="nav('cbt')" id="btn-cbt" class="nav-btn text-gray-400 p-2">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+        </button>
+        <button onclick="nav('lama')" id="btn-lama" class="nav-btn text-gray-400 p-2">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+        </button>
+        <button onclick="nav('grounding')" id="btn-grounding" class="nav-btn text-gray-400 p-2">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+        </button>
+        <button onclick="nav('diary')" id="btn-diary" class="nav-btn text-gray-400 p-2">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+        </button>
+        <button onclick="nav('calm')" id="btn-calm" class="nav-btn text-gray-400 p-2">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        </button>
     </nav>
 
-    <!-- Modal Nocturno -->
+    <!-- MODALES -->
     <div id="night-modal" class="fixed inset-0 bg-black/90 backdrop-blur-lg z-[200] hidden flex items-center justify-center p-8 text-center">
-        <div class="kawaii-card p-10 night-glow border-none max-w-sm">
-            <div class="text-6xl mb-6">🌙</div>
+        <div class="kawaii-card p-10 night-glow border-none max-w-sm shadow-2xl">
+            <div class="text-6xl mb-6 animate-pulse">🌙</div>
             <p class="text-xl leading-relaxed font-bold italic mb-8">"Melisa, hiciste lo suficiente y es perfecto para el fin del día."</p>
-            <button onclick="hideNightMessage()" class="bg-white/20 text-white px-8 py-3 rounded-full border border-white/40 font-bold">A descansar ✨</button>
+            <button onclick="hideNightMessage()" class="bg-white/20 hover:bg-white/30 text-white px-8 py-3 rounded-full border border-white/40 font-bold transition">A descansar ✨</button>
         </div>
     </div>
-
-    <!-- Modal Pánico -->
     <div id="panic-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200] hidden flex items-center justify-center p-6 text-center text-xs">
         <div class="kawaii-card p-8 max-w-sm">
             <h2 class="text-lg font-bold text-red-500 mb-4 uppercase">Melisa, respira</h2>
-            <p class="mb-4">Es solo adrenalina, Melisa. Tu cuerpo está a salvo. Deja que pase como una ola.</p>
-            <button onclick="hidePanicDialog()" class="bg-gray-100 px-8 py-2 rounded-full font-bold">Ya pasó ✨</button>
+            <p class="mb-3 text-gray-600">Es solo adrenalina, Melisa. Tu cuerpo está a salvo.</p>
+            <p class="mb-6 text-gray-600">Deja que pase como una ola sobre la arena.</p>
+            <button onclick="hidePanicDialog()" class="bg-pink-100 hover:bg-pink-200 text-pink-600 px-8 py-3 rounded-full font-bold transition">Ya pasó ✨</button>
         </div>
     </div>
 
-    <script>
-        // --- ESTADO Y GUARDADO ---
-        let state = JSON.parse(localStorage.getItem('melisa_app_state')) || { exp: 0, victories: {}, cbt_history: [], gratitudes: [] };
-        function save() { localStorage.setItem('melisa_app_state', JSON.stringify(state)); }
+    <!-- SCRIPT TIPO MÓDULO (Para conectarse a Firebase) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        const perAction = 17;
+        // 1. Configuración de la base de datos de la plataforma
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'melisa-calma';
 
-        // --- NAVEGACIÓN ---
+        let userId = null;
+        let isAppReady = false;
+
+        // 2. Estado de la aplicación
+        let state = { 
+            exp: 0, 
+            victories: {}, 
+            cbt_history: [], 
+            gratitudes: [],
+            todayMood: null,
+            smiles: [],
+            diary_history: []
+        };
+
+        function ensureStateDefaults() {
+            if (!state.diary_history) state.diary_history = [];
+            if (typeof state.todayMood === 'undefined') state.todayMood = null;
+            if (!state.smiles) state.smiles = [];
+            if (!state.cbt_history) state.cbt_history = [];
+            if (!state.gratitudes) state.gratitudes = [];
+            if (!state.victories) state.victories = {};
+            if (typeof state.exp !== 'number') state.exp = 0;
+        }
+
+        // 3. Función para guardar en la Nube (Firebase)
+        async function saveState() { 
+            if (!userId) return; // No guarda si no ha iniciado sesión de fondo
+            try {
+                // Guarda en su carpeta secreta y personal de Firebase
+                const docRef = doc(db, 'artifacts', appId, 'users', userId, 'data', 'melisa_state');
+                await setDoc(docRef, state);
+                // También guardamos en local como respaldo
+                localStorage.setItem('melisa_app_final', JSON.stringify(state)); 
+            } catch (e) {
+                console.error("Error guardando en la nube. Usando respaldo local.", e);
+                localStorage.setItem('melisa_app_final', JSON.stringify(state)); 
+            }
+        }
+
+        // --- SISTEMA DE NAVEGACIÓN ---
         function nav(id) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.getElementById('tab-' + id).classList.add('active');
-            document.querySelectorAll('.nav-btn').forEach(b => { b.classList.remove('active'); b.classList.add('text-gray-400'); });
+            document.querySelectorAll('.nav-btn').forEach(b => { 
+                b.classList.remove('active'); 
+                b.classList.add('text-gray-400'); 
+            });
             document.getElementById('btn-' + id).classList.add('active');
             document.getElementById('btn-' + id).classList.remove('text-gray-400');
         }
 
-        // --- EFECTOS ---
+        // --- EFECTOS VISUALES ---
+        const cuteBeeSVG = `
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="width: 2.5rem; height: 2.5rem; drop-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                <ellipse cx="35" cy="35" rx="15" ry="20" fill="#fff" opacity="0.9" transform="rotate(-30 35 35)"/>
+                <path d="M 15 60 L 30 50 L 30 70 Z" fill="#4a4a4a"/>
+                <ellipse cx="55" cy="60" rx="38" ry="28" fill="#ffd166"/>
+                <path d="M 35 40 Q 45 60 35 83" stroke="#4a4a4a" stroke-width="7" fill="none" stroke-linecap="round"/>
+                <path d="M 55 33 Q 65 60 55 87" stroke="#4a4a4a" stroke-width="7" fill="none" stroke-linecap="round"/>
+                <ellipse cx="55" cy="30" rx="18" ry="22" fill="#fff" opacity="0.9" transform="rotate(20 55 30)"/>
+                <circle cx="75" cy="55" r="3.5" fill="#4a4a4a"/>
+                <circle cx="88" cy="55" r="3.5" fill="#4a4a4a"/>
+                <path d="M 78 60 Q 80 64 81.5 60 Q 83 64 85 60" stroke="#4a4a4a" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                <ellipse cx="68" cy="60" rx="5" ry="3" fill="#ff9a9e" opacity="0.8"/>
+                <ellipse cx="95" cy="60" rx="5" ry="3" fill="#ff9a9e" opacity="0.8"/>
+            </svg>
+        `;
+
         function createConfetti() {
             const container = document.getElementById('confetti-container');
-            for(let i=0; i<30; i++) {
+            const particles = [cuteBeeSVG, '✨', '💖', '🌸', '🌟', cuteBeeSVG];
+            for(let i = 0; i < 20; i++) {
                 const conf = document.createElement('div');
-                conf.className = 'confetti';
-                conf.style.left = Math.random() * 100 + 'vw'; conf.style.top = Math.random() * 100 + 'vh';
-                conf.style.backgroundColor = ['#ffafbd', '#ffdeeb', '#b8e0d2', '#fdfdcb'][Math.floor(Math.random()*4)];
-                conf.style.opacity = '1'; conf.style.transform = `scale(${Math.random()})`;
-                container.appendChild(conf); setTimeout(() => conf.remove(), 1000);
+                conf.className = 'kawaii-particle';
+                conf.innerHTML = particles[Math.floor(Math.random() * particles.length)];
+                conf.style.left = Math.random() * 100 + 'vw';
+                conf.style.top = Math.random() * 100 + 'vh';
+                conf.style.animationDuration = (1.2 + Math.random() * 0.8) + 's';
+                container.appendChild(conf);
+                setTimeout(() => conf.remove(), 2000);
             }
         }
 
-        // --- PLANTA ---
+        // --- LÓGICA DE LA PLANTA ---
         function updatePlantUI() {
-            const progress = (state.exp / 100) * 100;
-            document.getElementById('main-progress').style.width = Math.min(progress, 100) + '%';
-            document.getElementById('experience-txt').innerText = `${Math.min(Math.round(state.exp), 100)}/100 para florecer`;
-            const growth = document.getElementById('plant-growth'); const stage = document.getElementById('plant-stage-name');
+            const progress = Math.min((state.exp / 100) * 100, 100);
+            document.getElementById('main-progress').style.width = progress + '%';
+            document.getElementById('experience-txt').innerText = `${Math.floor(progress)}/100 para florecer`;
+            
+            const growth = document.getElementById('plant-growth'); 
+            const stage = document.getElementById('plant-stage-name');
             growth.innerHTML = '';
-            if (state.exp < 30) { stage.innerText = "Semillita de Paz"; growth.innerHTML = '<circle cx="50" cy="95" r="5" fill="#d4a373" />'; }
-            else if (state.exp < 60) { stage.innerText = "Brote de Valor"; growth.innerHTML = '<path d="M50 100 Q45 80 50 60" stroke="#88b04b" stroke-width="4" fill="none" />'; }
-            else if (state.exp < 90) { stage.innerText = "Plantita Resiliente"; growth.innerHTML = `<path d="M50 100 Q50 80 50 40" stroke="#88b04b" stroke-width="4" fill="none" /><ellipse cx="40" cy="60" rx="10" ry="5" fill="#88b04b" transform="rotate(-30 40 60)" />`; }
-            else { stage.innerText = "Flor de Melisa ✨"; growth.innerHTML = `<path d="M50 100 Q50 80 50 40" stroke="#88b04b" stroke-width="4" fill="none" /><circle cx="50" cy="35" r="14" fill="#ffb7b2" /><circle cx="50" cy="35" r="5" fill="#fff" />`; }
+            
+            if (state.exp < 30) { 
+                stage.innerText = "Semillita de Paz"; 
+                growth.innerHTML = '<path d="M50 90 Q48 85 50 80" stroke="#7ebc89" stroke-width="3" stroke-linecap="round" fill="none"/><path d="M50 80 Q45 75 45 80 Q48 85 50 80" fill="#7ebc89"/><path d="M50 80 Q55 75 55 80 Q52 85 50 80" fill="#7ebc89"/>'; 
+            } else if (state.exp < 60) { 
+                stage.innerText = "Brote de Valor"; 
+                growth.innerHTML = '<path d="M50 90 Q55 70 50 50" stroke="#7ebc89" stroke-width="4" stroke-linecap="round" fill="none"/><path d="M52 75 Q65 65 65 75 Q55 80 52 75" fill="#7ebc89"/><path d="M48 65 Q35 55 35 65 Q45 70 48 65" fill="#7ebc89"/>'; 
+            } else if (state.exp < 90) { 
+                stage.innerText = "Plantita Resiliente"; 
+                growth.innerHTML = '<path d="M50 90 Q55 60 50 35" stroke="#7ebc89" stroke-width="4" stroke-linecap="round" fill="none"/><path d="M52 70 Q68 60 65 75 Q55 80 52 70" fill="#7ebc89"/><path d="M48 55 Q32 45 35 60 Q45 65 48 55" fill="#7ebc89"/><path d="M45 35 Q50 20 55 35 Q50 42 45 35" fill="#ffb7b2"/><path d="M45 35 Q50 20 55 35" stroke="#ff9a9e" stroke-width="1.5" fill="none"/>'; 
+            } else { 
+                stage.innerText = "Flor de Melisa ✨"; 
+                growth.innerHTML = '<path d="M50 90 Q55 60 50 35" stroke="#7ebc89" stroke-width="4" stroke-linecap="round" fill="none"/><path d="M52 70 Q68 60 65 75 Q55 80 52 70" fill="#7ebc89"/><path d="M48 55 Q32 45 35 60 Q45 65 48 55" fill="#7ebc89"/><circle cx="50" cy="20" r="10" fill="#ff8e9e"/><circle cx="62" cy="28" r="10" fill="#ff8e9e"/><circle cx="58" cy="42" r="10" fill="#ff8e9e"/><circle cx="42" cy="42" r="10" fill="#ff8e9e"/><circle cx="38" cy="28" r="10" fill="#ff8e9e"/><circle cx="50" cy="32" r="8" fill="#ffe066"/><circle cx="47" cy="31" r="1.5" fill="#6b5b95"/><circle cx="53" cy="31" r="1.5" fill="#6b5b95"/><path d="M49 33.5 Q50 35.5 51 33.5" stroke="#6b5b95" stroke-width="1" fill="none" stroke-linecap="round"/><ellipse cx="45" cy="33" rx="1.5" ry="1" fill="#ff9a9e" opacity="0.8"/><ellipse cx="55" cy="33" rx="1.5" ry="1" fill="#ff9a9e" opacity="0.8"/>'; 
+            }
             
             ['water','sleep','move','affirm','food','self'].forEach(id => {
-                const cb = document.getElementById('check-' + id); if(cb) cb.checked = !!state.victories[id];
-                const g = document.getElementById('garden-' + id); if(g) state.victories[id] ? g.classList.add('garden-unlocked') : g.classList.remove('garden-unlocked');
+                const btn = document.getElementById('btn-vic-' + id); 
+                if(btn) {
+                    if(state.victories[id]) btn.classList.add('garden-unlocked');
+                    else btn.classList.remove('garden-unlocked');
+                }
             });
         }
 
-        // --- ACCIONES DE USUARIO ---
-        function syncFromHome(id, checked) {
-            state.victories[id] = checked;
-            state.exp = checked ? state.exp + perAction : Math.max(0, state.exp - perAction);
-            if(checked) createConfetti();
-            save(); updatePlantUI();
+        function wink() { 
+            const avatar = document.getElementById('avatar'); 
+            if (!avatar) return;
+            const original = avatar.innerText; 
+            avatar.innerText = '😉'; 
+            setTimeout(() => avatar.innerText = original, 500); 
         }
 
-        function toggleGardenVictory(id) {
+        const expPerAction = 16.6; 
+        function toggleVictory(id) {
             state.victories[id] = !state.victories[id];
-            state.exp = state.victories[id] ? state.exp + perAction : Math.max(0, state.exp - perAction);
-            const fb = document.getElementById('garden-feedback');
-            fb.innerText = state.victories[id] ? "¡Has regado tu flor, Melisa! 🌸" : "Tu flor te espera.";
-            if(state.victories[id]) createConfetti();
-            save(); updatePlantUI();
+            if (state.victories[id]) {
+                state.exp += expPerAction;
+                createConfetti();
+            } else {
+                state.exp = Math.max(0, state.exp - expPerAction);
+            }
+            const fb = document.getElementById('victory-feedback');
+            if(state.victories[id]) fb.innerText = "¡Riego con amor para Melisa! 🌸";
+            else fb.innerText = "Mañana florecerá.";
             setTimeout(() => fb.innerText = "", 2000);
+            
+            saveState(); 
+            updatePlantUI();
         }
 
-        // --- CBT Y ESTRATEGIAS ---
+        // --- CAZADOR DE NUBES ---
         function addThoughtChallenge() {
-            const t = document.getElementById('cbt-thought'); const f = document.getElementById('cbt-friend');
-            if(!t.value.trim()) return;
-            state.cbt_history.unshift({ thought: t.value, friend: f.value || 'Sé amable contigo.' });
-            renderCBT(); t.value = ""; f.value = ""; state.exp += 5; createConfetti(); save(); updatePlantUI();
+            const thoughtInput = document.getElementById('cbt-thought'); 
+            const friendInput = document.getElementById('cbt-friend');
+            if(!thoughtInput.value.trim()) return; 
+            
+            const entry = { thought: thoughtInput.value, friend: friendInput.value || 'Trátate con mucho amor.' };
+            state.cbt_history.unshift(entry);
+            thoughtInput.value = ""; friendInput.value = ""; 
+            state.exp += 5; 
+            
+            createConfetti(); saveState(); updatePlantUI(); renderCBT();
         }
 
         function renderCBT() {
-            const hist = document.getElementById('cbt-history'); hist.innerHTML = '';
+            const historyContainer = document.getElementById('cbt-history'); 
+            historyContainer.innerHTML = ''; 
             state.cbt_history.slice(0, 10).forEach(item => {
-                const div = document.createElement('div'); div.className = 'p-4 bg-white rounded-2xl border-2 border-purple-100 text-xs shadow-sm mb-3';
+                const div = document.createElement('div'); 
+                div.className = 'p-4 bg-white rounded-2xl border-2 border-purple-100 text-xs shadow-sm mb-3';
                 div.innerHTML = `<p class="font-bold text-pink-400 mb-2">Nube: "${item.thought}"</p><p class="text-gray-600"><b>Lente Amiga:</b> ${item.friend}</p>`;
-                hist.appendChild(div);
+                historyContainer.appendChild(div);
             });
         }
 
-        const colors = ["Rojo", "Azul", "Verde", "Amarillo", "Violeta", "Naranja", "Rosa"];
-        function nextGroundingColor() { document.getElementById('target-color').innerText = colors[Math.floor(Math.random()*colors.length)]; }
+        // --- ESTADO DE ÁNIMO ---
+        const moodEmojis = ['awful', 'sad', 'neutral', 'good', 'great'];
+        function setMood(mood) {
+            state.todayMood = mood;
+            saveState(); updateMoodUI(); createConfetti();
+        }
+        
+        function updateMoodUI() {
+            moodEmojis.forEach(m => {
+                const btn = document.getElementById('mood-' + m);
+                if (btn) {
+                    if (state.todayMood === m) {
+                        btn.classList.remove('grayscale', 'opacity-40');
+                        btn.classList.add('scale-125', 'opacity-100');
+                    } else {
+                        btn.classList.add('grayscale', 'opacity-40');
+                        btn.classList.remove('scale-125', 'opacity-100');
+                    }
+                }
+            });
+        }
 
+        // --- DIARIO RÁPIDO ---
+        function getMoodEmoji(mood) {
+            const emojis = { awful: '🌧️', sad: '☁️', neutral: '⛅', good: '☀️', great: '🌈' };
+            return emojis[mood] || '';
+        }
+
+        function saveQuickDiary() {
+            const text = document.getElementById('quick-diary-text').value;
+            if(!text.trim()) return;
+            const dateStr = new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+            let prefix = state.todayMood ? `[Mi clima hoy: ${getMoodEmoji(state.todayMood)}] \n` : "";
+            
+            state.diary_history.unshift({ date: dateStr, text: prefix + text, img: null });
+            document.getElementById('quick-diary-text').value = '';
+            
+            state.exp += 10;
+            saveState(); renderDiary(); updatePlantUI(); createConfetti();
+
+            const fb = document.getElementById('quick-diary-feedback');
+            fb.innerText = "¡Desahogo guardado con amor! ✨";
+            setTimeout(() => fb.innerText = "", 2500);
+        }
+
+        // --- GROUNDING ---
+        let groundingStep = 0;
+        const groundingSteps = [
+            { icon: '👁️', text: 'Busca 5 cosas que puedas VER', btn: 'Las veo 👀' },
+            { icon: '✋', text: 'Busca 4 cosas que puedas TOCAR', btn: 'Las toco ✨' },
+            { icon: '👂', text: 'Busca 3 cosas que puedas OÍR', btn: 'Las escucho 🎶' },
+            { icon: '👃', text: 'Busca 2 cosas que puedas OLER', btn: 'Las huelo 🌸' },
+            { icon: '👅', text: 'Busca 1 cosa que puedas SABOREAR', btn: 'Lo saboreo 🍬' },
+            { icon: '🌟', text: '¡Excelente, Melisa! Estás aquí y ahora.', btn: 'Volver a empezar 💖' }
+        ];
+
+        function next54321Step() {
+            groundingStep++;
+            if (groundingStep >= groundingSteps.length) groundingStep = 0;
+            const step = groundingSteps[groundingStep];
+            document.getElementById('grounding-icon').innerText = step.icon;
+            document.getElementById('grounding-text').innerText = step.text;
+            document.getElementById('grounding-btn').innerText = step.btn;
+
+            if(groundingStep === 5) {
+                createConfetti(); state.exp += 15; saveState(); updatePlantUI();
+            }
+        }
+
+        // --- GRATITUD ---
         function saveGratitude() {
-            const i = document.getElementById('gratitude-input'); if(!i.value.trim()) return;
-            state.gratitudes.unshift(i.value); i.value = ""; renderGratitude(); save();
+            const input = document.getElementById('gratitude-input'); 
+            if(!input.value.trim()) return;
+            state.gratitudes.unshift(input.value); 
+            input.value = ""; 
+            saveState(); renderGratitude(); createConfetti();
         }
 
         function renderGratitude() {
-            const list = document.getElementById('gratitude-list'); list.innerHTML = '';
+            const listContainer = document.getElementById('gratitude-list'); 
+            listContainer.innerHTML = '';
             state.gratitudes.slice(0, 5).forEach(g => {
-                const d = document.createElement('div'); d.className = 'p-2 bg-white rounded-xl text-[10px] border border-green-50 italic mb-1';
-                d.innerText = "✨ " + g; list.appendChild(d);
+                const div = document.createElement('div'); 
+                div.className = 'p-3 bg-white rounded-xl text-xs border border-green-50 italic mb-2 text-gray-600 shadow-sm';
+                div.innerText = "✨ " + g; 
+                listContainer.appendChild(div);
             });
         }
 
-        function triggerAffirmation() {
-            const affs = ["Melisa, hoy elijo ser mi mejor aliada.", "Merezco paz y amor.", "Hoy soy suficiente."];
-            document.getElementById('affirmation-text').innerText = affs[Math.floor(Math.random()*affs.length)];
-            if(!document.getElementById('check-affirm').checked) syncFromHome('affirm', true);
-            createConfetti();
+        // --- CAJITA DE SONRISAS ---
+        function saveSmile() {
+            const input = document.getElementById('smile-input'); 
+            if(!input.value.trim()) return;
+            state.smiles.unshift(input.value); 
+            input.value = ""; 
+            saveState(); renderSmiles(); createConfetti();
         }
 
-        // --- UTILIDADES ---
-        function showNightMessage() { document.getElementById('night-modal').classList.remove('hidden'); createConfetti(); }
-        function hideNightMessage() { document.getElementById('night-modal').classList.add('hidden'); }
-        function showPanicDialog() { document.getElementById('panic-modal').classList.remove('hidden'); }
-        function hidePanicDialog() { document.getElementById('panic-modal').classList.add('hidden'); }
-        function wink() { const av = document.getElementById('avatar'); const org = av.innerText; av.innerText = '😉'; setTimeout(() => av.innerText = org, 500); }
+        function renderSmiles() {
+            const listContainer = document.getElementById('smile-list'); 
+            if(!listContainer) return;
+            listContainer.innerHTML = '';
+            state.smiles.slice(0, 5).forEach(s => {
+                const div = document.createElement('div'); 
+                div.className = 'p-3 bg-white rounded-xl text-xs border border-yellow-100 italic mb-2 text-gray-600 shadow-sm';
+                div.innerText = "💛 " + s; 
+                listContainer.appendChild(div);
+            });
+        }
+
+        // --- FRASES ---
+        const dailyAffirmations = [
+            "Melisa, hoy elijo ser mi mejor aliada.", 
+            "Mi valor es inmenso y no depende de mi productividad.", 
+            "Merezco amor, paz y compasión.", 
+            "Hoy soy suficiente tal cual soy.",
+            "Es válido descansar, mi cuerpo lo necesita.",
+            "Estoy haciendo lo mejor que puedo, y eso está bien.",
+            "Mis emociones son válidas, pero no me definen.",
+            "Cada pequeño paso es una gran victoria.",
+            "Soy más valiente de lo que creo.",
+            "Me permito sanar a mi propio ritmo."
+        ];
+
+        function triggerAffirmation() {
+            document.getElementById('affirmation-text').innerText = `"${dailyAffirmations[Math.floor(Math.random()*dailyAffirmations.length)]}"`;
+            if(!state.victories['affirm']) toggleVictory('affirm');
+            else createConfetti();
+        }
+
+        const lamaQuotes = [
+            "La felicidad genuina debe ser incondicional. Es la habilidad de elegir estar en paz independiente de la realidad que te rodea.",
+            "No queremos una mente en blanco, queremos una mente virtuosa. Así como nutrimos el cuerpo, necesitamos nutrir la mente.",
+            "La ansiedad viene por querer invertir en el futuro y no en el presente. Tenemos que canalizar esa energía en el aquí y ahora.",
+            "El dolor es inevitable en la vida, pero el sufrimiento es opcional. Depende de cómo nuestra mente se relaciona con ese dolor.",
+            "Nuestros pensamientos son como nubes pasando por el cielo. Tú eres el cielo, no las nubes. Déjalas pasar.",
+            "La meditación no es poner la mente en blanco, es familiarizarse con el estado natural de paz que ya reside en ti.",
+            "Acepta este momento tal como es. La lucha contra lo que ya está sucediendo es lo que genera la mayor ansiedad."
+        ];
+
+        function triggerLamaQuote() {
+            const quoteElem = document.getElementById('lama-quote-text');
+            if (quoteElem) {
+                quoteElem.innerText = `"${lamaQuotes[Math.floor(Math.random()*lamaQuotes.length)]}"`;
+            }
+        }
+
+        // --- DIARIO CANVAS ---
+        let canvas, ctx, isDrawing = false;
+        let brushColor = '#6b5b95';
+
+        function initCanvas() {
+            canvas = document.getElementById('diary-canvas');
+            if(!canvas) return;
+            ctx = canvas.getContext('2d');
+            ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.lineWidth = 4; ctx.strokeStyle = brushColor;
+
+            canvas.addEventListener('touchstart', startDraw, {passive: false});
+            canvas.addEventListener('touchmove', draw, {passive: false});
+            canvas.addEventListener('touchend', endDraw);
+            canvas.addEventListener('mousedown', startDraw);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', endDraw);
+            canvas.addEventListener('mouseout', endDraw);
+        }
+
+        function getDrawPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return { x: (clientX - rect.left) * (canvas.width / rect.width), y: (clientY - rect.top) * (canvas.height / rect.height) };
+        }
+
+        function startDraw(e) { e.preventDefault(); isDrawing = true; const pos = getDrawPos(e); ctx.beginPath(); ctx.moveTo(pos.x, pos.y); }
+        function draw(e) { if (!isDrawing) return; e.preventDefault(); const pos = getDrawPos(e); ctx.lineTo(pos.x, pos.y); ctx.stroke(); }
+        function endDraw(e) { if (!isDrawing) return; e.preventDefault(); isDrawing = false; }
+        function setBrushColor(color) { brushColor = color; if(ctx) ctx.strokeStyle = color; }
+        function clearCanvas() { if(ctx) ctx.clearRect(0, 0, canvas.width, canvas.height); }
+
+        function saveDiaryEntry() {
+            const text = document.getElementById('diary-text').value;
+            let imgData = null;
+            const blank = document.createElement('canvas');
+            blank.width = canvas.width; blank.height = canvas.height;
+            if(canvas.toDataURL() !== blank.toDataURL()) imgData = canvas.toDataURL();
+
+            if(!text.trim() && !imgData) return; 
+            const dateStr = new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+            
+            state.diary_history.unshift({ date: dateStr, text: text, img: imgData });
+            document.getElementById('diary-text').value = '';
+            clearCanvas();
+            
+            state.exp += 15; saveState(); renderDiary(); updatePlantUI(); createConfetti();
+        }
+
+        function renderDiary() {
+            const container = document.getElementById('diary-history');
+            if(!container) return;
+            container.innerHTML = '';
+            
+            const pastelColors = ['bg-pink-50 border-pink-200 text-pink-900', 'bg-yellow-50 border-yellow-200 text-yellow-900', 'bg-blue-50 border-blue-200 text-blue-900', 'bg-green-50 border-green-200 text-green-900', 'bg-purple-50 border-purple-200 text-purple-900'];
+            
+            state.diary_history.forEach((entry, index) => {
+                const colorClass = pastelColors[index % pastelColors.length];
+                const div = document.createElement('div');
+                div.className = `break-inside-avoid mb-3 p-4 rounded-2xl border-2 ${colorClass} shadow-sm text-left relative transition-transform hover:scale-105`;
+                
+                let html = `<button onclick="deleteDiaryEntry(${index})" class="absolute top-2 right-3 opacity-40 hover:opacity-100 font-bold text-lg leading-none">&times;</button><p class="text-[9px] font-bold opacity-60 mb-2 uppercase tracking-wider">${entry.date}</p>`;
+                if(entry.text) html += `<p class="text-sm mb-2 whitespace-pre-wrap leading-tight">${entry.text}</p>`;
+                if(entry.img) html += `<img src="${entry.img}" class="w-full rounded-xl border border-white/50 shadow-sm mt-2" alt="Dibujo"/>`;
+                
+                div.innerHTML = html; container.appendChild(div);
+            });
+        }
+
+        function deleteDiaryEntry(index) {
+            state.diary_history.splice(index, 1);
+            saveState(); renderDiary();
+        }
+
+        // --- EXPORTAR FUNCIONES AL NAVEGADOR ---
+        window.nav = nav; 
+        window.wink = wink; 
+        window.setMood = setMood;
+        window.saveQuickDiary = saveQuickDiary; 
+        window.triggerAffirmation = triggerAffirmation;
+        window.toggleVictory = toggleVictory; 
+        window.showNightMessage = () => { document.getElementById('night-modal').classList.remove('hidden'); createConfetti(); };
+        window.hideNightMessage = () => document.getElementById('night-modal').classList.add('hidden');
+        window.addThoughtChallenge = addThoughtChallenge; 
+        window.triggerLamaQuote = triggerLamaQuote;
+        window.next54321Step = next54321Step; 
+        window.saveGratitude = saveGratitude;
+        window.saveSmile = saveSmile; 
+        window.setBrushColor = setBrushColor;
+        window.clearCanvas = clearCanvas; 
+        window.saveDiaryEntry = saveDiaryEntry;
+        window.deleteDiaryEntry = deleteDiaryEntry; 
+        window.showPanicDialog = () => document.getElementById('panic-modal').classList.remove('hidden');
+        window.hidePanicDialog = () => document.getElementById('panic-modal').classList.add('hidden');
 
         let breathInterval;
-        function startBreathing() {
-            const orb = document.getElementById('orb'); const status = document.getElementById('breath-status'); const btn = document.getElementById('btn-breathe');
-            if (breathInterval) { clearInterval(breathInterval); breathInterval = null; btn.innerText = "Continuar"; status.innerText = "Listo"; orb.className = 'breath-orb'; return; }
-            btn.innerText = "Pausar"; let step = 0; const cycle = [{t: "Inhala", c: "breath-orb inhale"}, {t: "Mantén", c: "breath-orb inhale"}, {t: "Exhala", c: "breath-orb exhale"}, {t: "Pausa", c: "breath-orb exhale"}];
-            const run = () => { const s = cycle[step]; status.innerText = s.t; orb.className = s.c; step = (step + 1) % 4; };
-            run(); breathInterval = setInterval(run, 4000);
+        window.startBreathing = function() {
+            const orb = document.getElementById('orb'); const statusText = document.getElementById('breath-status'); const btn = document.getElementById('btn-breathe');
+            if(breathInterval) { clearInterval(breathInterval); breathInterval = null; btn.innerText = "Continuar"; statusText.innerText = "Listo"; orb.className = 'breath-orb'; return; }
+            btn.innerText = "Pausar"; let step = 0; 
+            const cycle = [{ text: "Inhala", cssClass: "breath-orb inhale" }, { text: "Mantén", cssClass: "breath-orb inhale" }, { text: "Exhala", cssClass: "breath-orb exhale" }, { text: "Pausa", cssClass: "breath-orb exhale" }];
+            const runCycle = () => { const current = cycle[step]; statusText.innerText = current.text; orb.className = current.cssClass; step = (step + 1) % 4; };
+            runCycle(); breathInterval = setInterval(runCycle, 4000);
         }
 
-        // Cargar todo al inicio
-        window.onload = () => { updatePlantUI(); renderCBT(); renderGratitude(); };
+        // --- INICIALIZACIÓN DE DATOS (FIREBASE + LOCAL) ---
+        function updateAllUI() {
+            updatePlantUI(); updateMoodUI(); renderCBT(); 
+            renderGratitude(); renderSmiles(); renderDiary();
+            const affirmElem = document.getElementById('affirmation-text');
+            if (affirmElem) {
+                affirmElem.innerText = `"${dailyAffirmations[Math.floor(Math.random()*dailyAffirmations.length)]}"`;
+            }
+            
+            if(!isAppReady) {
+                isAppReady = true;
+                const loader = document.getElementById('loading-screen');
+                loader.style.opacity = '0';
+                setTimeout(() => loader.style.display = 'none', 500);
+            }
+        }
+
+        const initAuth = async () => {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (error) {
+                console.error("Error de conexión, usando memoria local.", error);
+                let local = JSON.parse(localStorage.getItem('melisa_app_final'));
+                if (local) state = local;
+                ensureStateDefaults(); updateAllUI();
+            }
+        };
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                userId = user.uid;
+                const docRef = doc(db, 'artifacts', appId, 'users', userId, 'data', 'melisa_state');
+                onSnapshot(docRef, (docSnap) => {
+                    if (docSnap.exists()) {
+                        state = docSnap.data();
+                        ensureStateDefaults();
+                    } else {
+                        let local = JSON.parse(localStorage.getItem('melisa_app_final'));
+                        if (local) {
+                            state = local; ensureStateDefaults();
+                            saveState();
+                        }
+                    }
+                    updateAllUI();
+                }, (error) => {
+                    console.error("Error leyendo Firebase:", error);
+                });
+            }
+        });
+
+        window.onload = () => { 
+            initCanvas();
+            triggerLamaQuote();
+            initAuth();
+        };
     </script>
 </body>
 </html>
