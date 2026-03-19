@@ -202,25 +202,41 @@
             <p class="text-[10px] text-gray-400 text-center mb-8 uppercase tracking-widest italic">Toca una flor para regar tu victoria</p>
             <div class="grid grid-cols-2 gap-3">
                 <button onclick="toggleGardenVictory('water')" id="garden-water" class="garden-btn kawaii-card p-4 text-center opacity-30 grayscale border-2 border-transparent">
-                    <div class="text-3xl mb-1">🌸</div><p class="text-[10px] font-bold text-pink-400">AGUA</p>
+                    <div class="text-3xl mb-1">🌸</div><p class="text-[10px] font-bold text-pink-400 uppercase">Agua</p>
                 </button>
                 <button onclick="toggleGardenVictory('sleep')" id="garden-sleep" class="garden-btn kawaii-card p-4 text-center opacity-30 grayscale border-2 border-transparent">
-                    <div class="text-3xl mb-1">🌙</div><p class="text-[10px] font-bold text-purple-400">DESCANSO</p>
+                    <div class="text-3xl mb-1">🌙</div><p class="text-[10px] font-bold text-purple-400 uppercase">Descanso</p>
                 </button>
                 <button onclick="toggleGardenVictory('move')" id="garden-move" class="garden-btn kawaii-card p-4 text-center opacity-30 grayscale border-2 border-transparent">
-                    <div class="text-3xl mb-1">👟</div><p class="text-[10px] font-bold text-blue-400">MOVERSE</p>
+                    <div class="text-3xl mb-1">👟</div><p class="text-[10px] font-bold text-blue-400 uppercase">Moverse</p>
                 </button>
                 <button onclick="toggleGardenVictory('affirm')" id="garden-affirm" class="garden-btn kawaii-card p-4 text-center opacity-30 grayscale border-2 border-transparent">
-                    <div class="text-3xl mb-1">💎</div><p class="text-[10px] font-bold text-yellow-500">VALOR</p>
+                    <div class="text-3xl mb-1">💎</div><p class="text-[10px] font-bold text-yellow-500 uppercase">Valor</p>
                 </button>
                 <button onclick="toggleGardenVictory('food')" id="garden-food" class="garden-btn kawaii-card p-4 text-center opacity-30 grayscale border-2 border-transparent">
-                    <div class="text-3xl mb-1">🍱</div><p class="text-[10px] font-bold text-green-500">COMIDA</p>
+                    <div class="text-3xl mb-1">🍱</div><p class="text-[10px] font-bold text-green-500 uppercase">Comida</p>
                 </button>
                 <button onclick="toggleGardenVictory('self')" id="garden-self" class="garden-btn kawaii-card p-4 text-center opacity-30 grayscale border-2 border-transparent">
-                    <div class="text-3xl mb-1">🎨</div><p class="text-[10px] font-bold text-orange-400">PARA MÍ</p>
+                    <div class="text-3xl mb-1">🎨</div><p class="text-[10px] font-bold text-orange-400 uppercase">Para mí</p>
                 </button>
             </div>
             <div id="garden-feedback" class="mt-6 text-center text-sm font-bold text-green-500 h-6"></div>
+        </section>
+
+        <!-- AFIRMACIONES -->
+        <section id="tab-affirmations" class="tab-content">
+            <div class="kawaii-card p-8 mb-6 text-center shadow-lg bg-gradient-to-b from-white to-pink-50">
+                <div class="text-5xl mb-4">🪞</div>
+                <h2 class="text-xl font-bold text-pink-500 mb-2">Espejo de Melisa</h2>
+                <div class="min-h-[120px] flex items-center justify-center p-4 bg-white/60 rounded-3xl border-2 border-pink-100 mb-6">
+                    <p id="affirmation-text" class="text-md font-semibold text-pink-600 leading-relaxed italic">
+                        "Melisa, hoy elijo ser mi mejor aliada."
+                    </p>
+                </div>
+                <button onclick="triggerAffirmation()" class="w-full bg-pink-400 text-white py-4 rounded-3xl font-bold shadow-lg hover:scale-105 transition">
+                    ✨ Siguiente Verdad
+                </button>
+            </div>
         </section>
 
         <!-- SOS -->
@@ -230,13 +246,16 @@
                 <div class="flex justify-center mb-8"><div id="orb" class="breath-orb"><span id="breath-status" class="text-pink-400 font-bold text-xl uppercase">Listo</span></div></div>
                 <button onclick="startBreathing()" id="btn-breathe" class="bg-pink-400 text-white px-10 py-3 rounded-full font-bold shadow-lg">Comenzar</button>
             </div>
-            <button onclick="showPanicDialog()" class="w-full bg-red-400 text-white py-5 rounded-3xl font-bold shadow-lg mb-6">🚨 Ayuda en Crisis</button>
-            <div class="kawaii-card p-6 flex items-center justify-between"><span class="font-bold text-red-500 text-xs">Asistencia al Suicida</span><a href="tel:08009991791" class="bg-red-500 text-white p-3 rounded-full shadow-lg text-xs">📞</a></div>
+            <button onclick="showPanicDialog()" class="w-full bg-red-400 text-white py-6 rounded-[2.5rem] font-bold shadow-xl text-lg mb-8">🚨 Ayuda en Crisis</button>
+            <div class="kawaii-card p-8 bg-white border-2 border-red-100 flex items-center justify-between text-xs">
+                <span class="font-bold text-red-500">Asistencia al Suicida</span>
+                <a href="tel:08009991791" class="bg-red-500 text-white p-3 rounded-full shadow-lg">📞</a>
+            </div>
         </section>
 
     </main>
 
-    <!-- NAVEGACIÓN -->
+    <!-- Barra de Navegación -->
     <nav class="fixed bottom-6 left-4 right-4 bg-white/90 backdrop-blur-md rounded-full px-4 py-3 flex justify-between items-center shadow-2xl border-2 border-pink-50 z-50">
         <button onclick="nav('home')" id="btn-home" class="nav-btn active text-gray-400 p-2"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg></button>
         <button onclick="nav('cbt')" id="btn-cbt" class="nav-btn text-gray-400 p-2"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg></button>
@@ -245,7 +264,7 @@
         <button onclick="nav('calm')" id="btn-calm" class="nav-btn text-gray-400 p-2"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></button>
     </nav>
 
-    <!-- MODAL NOCTURNO -->
+    <!-- Modal Nocturno -->
     <div id="night-modal" class="fixed inset-0 bg-black/90 backdrop-blur-lg z-[200] hidden flex items-center justify-center p-8 text-center">
         <div class="kawaii-card p-10 night-glow border-none max-w-sm">
             <div class="text-6xl mb-6">🌙</div>
@@ -254,14 +273,23 @@
         </div>
     </div>
 
-    <!-- MODAL PÁNICO -->
+    <!-- Modal Pánico -->
     <div id="panic-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200] hidden flex items-center justify-center p-6 text-center text-xs">
-        <div class="kawaii-card p-8 max-w-sm"><h2 class="text-lg font-bold text-red-500 mb-4 uppercase">Melisa, respira</h2><p class="mb-4">Es solo adrenalina, Melisa. Tu cuerpo está a salvo. Deja que pase como una ola.</p><button onclick="hidePanicDialog()" class="bg-gray-100 px-8 py-2 rounded-full font-bold">Ya pasó ✨</button></div>
+        <div class="kawaii-card p-8 max-w-sm">
+            <h2 class="text-lg font-bold text-red-500 mb-4 uppercase">Melisa, respira</h2>
+            <p class="mb-4">Es solo adrenalina, Melisa. Tu cuerpo está a salvo. Deja que pase como una ola.</p>
+            <button onclick="hidePanicDialog()" class="bg-gray-100 px-8 py-2 rounded-full font-bold">Ya pasó ✨</button>
+        </div>
     </div>
 
     <script>
-        let exp = 0; const perAction = 17;
+        // --- ESTADO Y GUARDADO ---
+        let state = JSON.parse(localStorage.getItem('melisa_app_state')) || { exp: 0, victories: {}, cbt_history: [], gratitudes: [] };
+        function save() { localStorage.setItem('melisa_app_state', JSON.stringify(state)); }
 
+        const perAction = 17;
+
+        // --- NAVEGACIÓN ---
         function nav(id) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.getElementById('tab-' + id).classList.add('active');
@@ -270,6 +298,7 @@
             document.getElementById('btn-' + id).classList.remove('text-gray-400');
         }
 
+        // --- EFECTOS ---
         function createConfetti() {
             const container = document.getElementById('confetti-container');
             for(let i=0; i<30; i++) {
@@ -282,53 +311,88 @@
             }
         }
 
+        // --- PLANTA ---
         function updatePlantUI() {
-            const progress = (exp / 100) * 100;
+            const progress = (state.exp / 100) * 100;
             document.getElementById('main-progress').style.width = Math.min(progress, 100) + '%';
-            document.getElementById('experience-txt').innerText = `${Math.min(Math.round(exp), 100)}/100 para florecer`;
+            document.getElementById('experience-txt').innerText = `${Math.min(Math.round(state.exp), 100)}/100 para florecer`;
             const growth = document.getElementById('plant-growth'); const stage = document.getElementById('plant-stage-name');
             growth.innerHTML = '';
-            if (exp < 30) { stage.innerText = "Semillita de Paz"; growth.innerHTML = '<circle cx="50" cy="95" r="5" fill="#d4a373" />'; }
-            else if (exp < 60) { stage.innerText = "Brote de Valor"; growth.innerHTML = '<path d="M50 100 Q45 80 50 60" stroke="#88b04b" stroke-width="4" fill="none" />'; }
-            else if (exp < 90) { stage.innerText = "Plantita Resiliente"; growth.innerHTML = `<path d="M50 100 Q50 80 50 40" stroke="#88b04b" stroke-width="4" fill="none" /><ellipse cx="40" cy="60" rx="10" ry="5" fill="#88b04b" transform="rotate(-30 40 60)" />`; }
+            if (state.exp < 30) { stage.innerText = "Semillita de Paz"; growth.innerHTML = '<circle cx="50" cy="95" r="5" fill="#d4a373" />'; }
+            else if (state.exp < 60) { stage.innerText = "Brote de Valor"; growth.innerHTML = '<path d="M50 100 Q45 80 50 60" stroke="#88b04b" stroke-width="4" fill="none" />'; }
+            else if (state.exp < 90) { stage.innerText = "Plantita Resiliente"; growth.innerHTML = `<path d="M50 100 Q50 80 50 40" stroke="#88b04b" stroke-width="4" fill="none" /><ellipse cx="40" cy="60" rx="10" ry="5" fill="#88b04b" transform="rotate(-30 40 60)" />`; }
             else { stage.innerText = "Flor de Melisa ✨"; growth.innerHTML = `<path d="M50 100 Q50 80 50 40" stroke="#88b04b" stroke-width="4" fill="none" /><circle cx="50" cy="35" r="14" fill="#ffb7b2" /><circle cx="50" cy="35" r="5" fill="#fff" />`; }
+            
+            ['water','sleep','move','affirm','food','self'].forEach(id => {
+                const cb = document.getElementById('check-' + id); if(cb) cb.checked = !!state.victories[id];
+                const g = document.getElementById('garden-' + id); if(g) state.victories[id] ? g.classList.add('garden-unlocked') : g.classList.remove('garden-unlocked');
+            });
+        }
+
+        // --- ACCIONES DE USUARIO ---
+        function syncFromHome(id, checked) {
+            state.victories[id] = checked;
+            state.exp = checked ? state.exp + perAction : Math.max(0, state.exp - perAction);
+            if(checked) createConfetti();
+            save(); updatePlantUI();
         }
 
         function toggleGardenVictory(id) {
-            const check = document.getElementById('check-' + id);
-            if (check) { check.checked = !check.checked; syncProgress(id, check.checked);
-                const f = document.getElementById('garden-feedback');
-                if(check.checked) { f.innerText = "¡Has regado tu flor, Melisa! 🌸"; createConfetti(); }
-                else { f.innerText = "Tu flor te espera."; }
-                setTimeout(() => f.innerText = "", 2000);
-            }
+            state.victories[id] = !state.victories[id];
+            state.exp = state.victories[id] ? state.exp + perAction : Math.max(0, state.exp - perAction);
+            const fb = document.getElementById('garden-feedback');
+            fb.innerText = state.victories[id] ? "¡Has regado tu flor, Melisa! 🌸" : "Tu flor te espera.";
+            if(state.victories[id]) createConfetti();
+            save(); updatePlantUI();
+            setTimeout(() => fb.innerText = "", 2000);
         }
 
-        function syncFromHome(id, checked) { syncProgress(id, checked); if(checked) createConfetti(); }
-
-        function syncProgress(id, checked) {
-            const g = document.getElementById('garden-' + id); const h = document.getElementById('check-' + id);
-            if (checked) { g?.classList.add('garden-unlocked'); if(h) h.checked = true; exp += perAction; }
-            else { g?.classList.remove('garden-unlocked'); if(h) h.checked = false; exp = Math.max(0, exp - perAction); }
-            updatePlantUI();
-        }
-
+        // --- CBT Y ESTRATEGIAS ---
         function addThoughtChallenge() {
-            const t = document.getElementById('cbt-thought'); const f = document.getElementById('cbt-friend'); const hist = document.getElementById('cbt-history');
-            if (t.value.trim() === "") return;
-            const item = document.createElement('div'); item.className = 'p-4 bg-white rounded-2xl border-2 border-purple-100 text-xs shadow-sm';
-            item.innerHTML = `<p class="font-bold text-pink-400 mb-2">Nube: "${t.value}"</p><p class="text-gray-600"><b>Lente de Amiga:</b> ${f.value || 'Sería amable contigo.'}</p>`;
-            hist.prepend(item); t.value = ""; f.value = ""; exp += 5; updatePlantUI(); createConfetti();
+            const t = document.getElementById('cbt-thought'); const f = document.getElementById('cbt-friend');
+            if(!t.value.trim()) return;
+            state.cbt_history.unshift({ thought: t.value, friend: f.value || 'Sé amable contigo.' });
+            renderCBT(); t.value = ""; f.value = ""; state.exp += 5; createConfetti(); save(); updatePlantUI();
+        }
+
+        function renderCBT() {
+            const hist = document.getElementById('cbt-history'); hist.innerHTML = '';
+            state.cbt_history.slice(0, 10).forEach(item => {
+                const div = document.createElement('div'); div.className = 'p-4 bg-white rounded-2xl border-2 border-purple-100 text-xs shadow-sm mb-3';
+                div.innerHTML = `<p class="font-bold text-pink-400 mb-2">Nube: "${item.thought}"</p><p class="text-gray-600"><b>Lente Amiga:</b> ${item.friend}</p>`;
+                hist.appendChild(div);
+            });
         }
 
         const colors = ["Rojo", "Azul", "Verde", "Amarillo", "Violeta", "Naranja", "Rosa"];
-        function nextGroundingColor() { const c = colors[Math.floor(Math.random() * colors.length)]; document.getElementById('target-color').innerText = c; }
+        function nextGroundingColor() { document.getElementById('target-color').innerText = colors[Math.floor(Math.random()*colors.length)]; }
 
         function saveGratitude() {
-            const i = document.getElementById('gratitude-input'); if(i.value.trim() === "") return;
-            const item = document.createElement('div'); item.className = 'p-3 bg-white rounded-xl text-[10px] border border-green-100 italic';
-            item.innerText = "✨ " + i.value; document.getElementById('gratitude-list').prepend(item); i.value = "";
+            const i = document.getElementById('gratitude-input'); if(!i.value.trim()) return;
+            state.gratitudes.unshift(i.value); i.value = ""; renderGratitude(); save();
         }
+
+        function renderGratitude() {
+            const list = document.getElementById('gratitude-list'); list.innerHTML = '';
+            state.gratitudes.slice(0, 5).forEach(g => {
+                const d = document.createElement('div'); d.className = 'p-2 bg-white rounded-xl text-[10px] border border-green-50 italic mb-1';
+                d.innerText = "✨ " + g; list.appendChild(d);
+            });
+        }
+
+        function triggerAffirmation() {
+            const affs = ["Melisa, hoy elijo ser mi mejor aliada.", "Merezco paz y amor.", "Hoy soy suficiente."];
+            document.getElementById('affirmation-text').innerText = affs[Math.floor(Math.random()*affs.length)];
+            if(!document.getElementById('check-affirm').checked) syncFromHome('affirm', true);
+            createConfetti();
+        }
+
+        // --- UTILIDADES ---
+        function showNightMessage() { document.getElementById('night-modal').classList.remove('hidden'); createConfetti(); }
+        function hideNightMessage() { document.getElementById('night-modal').classList.add('hidden'); }
+        function showPanicDialog() { document.getElementById('panic-modal').classList.remove('hidden'); }
+        function hidePanicDialog() { document.getElementById('panic-modal').classList.add('hidden'); }
+        function wink() { const av = document.getElementById('avatar'); const org = av.innerText; av.innerText = '😉'; setTimeout(() => av.innerText = org, 500); }
 
         let breathInterval;
         function startBreathing() {
@@ -339,13 +403,8 @@
             run(); breathInterval = setInterval(run, 4000);
         }
 
-        function showNightMessage() { document.getElementById('night-modal').classList.remove('hidden'); createConfetti(); }
-        function hideNightMessage() { document.getElementById('night-modal').classList.add('hidden'); }
-        function showPanicDialog() { document.getElementById('panic-modal').classList.remove('hidden'); }
-        function hidePanicDialog() { document.getElementById('panic-modal').classList.add('hidden'); }
-        function wink() { const av = document.getElementById('avatar'); const org = av.innerText; av.innerText = '😉'; setTimeout(() => av.innerText = org, 500); }
-
-        window.onload = updatePlantUI;
+        // Cargar todo al inicio
+        window.onload = () => { updatePlantUI(); renderCBT(); renderGratitude(); };
     </script>
 </body>
 </html>
